@@ -68,11 +68,32 @@ export class RouteOptimizer {
         routeIds: string[]
     ): number | null {
         // TODO: implement this method
-        throw new Error('Not implemented');
+        return this.findShortestRoute(technician, boxes).totalDistanceKm;
+
+        // return results[results.length].totalDistanceKm
+
     }
 
     findShortestRoute(technician: Technician, boxes: Box[]): RouteResult {
         // TODO: implement this method
-        throw new Error('Not implemented');
+        let start = technician.startLocation
+        let route: string[] = [];
+        let totalDist = 0;
+        for(let i = 0; i < boxes.length; i++) {
+            let shortestDist = Number.MAX_VALUE;
+            let boxid = -1;
+            for(let j = i; j < boxes.length; j++) {
+                const hDist = this.haversineDistance(start, boxes[j].location)
+                if(hDist < shortestDist) {
+                    shortestDist = hDist
+                    boxid = j
+                }
+            }
+            totalDist += shortestDist;
+            route.push(boxes[boxid].id);
+            start = boxes[boxid].location;
+        }
+
+        return {technicianId: technician.id, route: route, totalDistanceKm: totalDist};
     }
 }
