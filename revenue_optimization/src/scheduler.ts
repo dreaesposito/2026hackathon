@@ -11,7 +11,22 @@ export class Scheduler {
     }
 
     getNextAvailableStartTime(areaSchedule: ScheduledAd[]): number {
-        return 0;
+        if (areaSchedule.length === 0) {
+            return 0;
+        }
+
+        areaSchedule.forEach(ad => {
+            // one ad starts later than 0
+            if (ad.startTime == 0) {
+                return ad.endTime;
+            }
+        })
+
+        // const max = Math.max(...areaSchedule.map(ad => ad.endTime));
+
+        // return max > 0 ? 0 : max;
+
+        return Math.max(...areaSchedule.map(ad => ad.endTime));
     }
 
     isValidSchedule(

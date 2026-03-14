@@ -12,15 +12,31 @@ export class RevenueEngine {
         ads: Ad[],
         schedule: Schedule
     ): number {
-        return 0;
+        const advertiserAdIds = new Set(
+            ads.filter(ad => ad.advertiserId === advertiserId)
+                .map(ad => ad.adId)
+        );
+
+        let count = 0;
+
+        Object.values(schedule).forEach(areaSchedule => {
+            areaSchedule.forEach(scheduledAd => {
+                if (advertiserAdIds.has(scheduledAd.adId)) {
+                    count++;
+                }
+            });
+        });
+
+        return count;
     }
 
+    //// ****
     calculateDiminishedRevenue(
         baseRevenue: number,
         advertiserScheduledCount: number,
         decayRate: number
     ): number {
-        return 0;
+        return baseRevenue * Math.pow(decayRate, advertiserScheduledCount);
     }
 
     calculatePlacementRevenue(
@@ -30,7 +46,15 @@ export class RevenueEngine {
         schedule: Schedule,
         decayRate: number
     ): number {
-        return 0;
+        if (areas.length > 0){
+            let area = areas[0];
+            const advertiserScheduleCount = this.getAdvertiserScheduleCount(ad.advertiserId, ads, schedule);
+            const diminshedRevenue = this.calculateDiminishedRevenue(ad.baseRevenue, advertiserScheduleCount, decayRate);
+            return diminshedRevenue * area.multiplier;
+        } else {
+            return 0;
+        }
+
     }
 
     getAdvertiserDiversity(ads: Ad[], schedule: Schedule): number {
